@@ -1,0 +1,54 @@
+cmake_minimum_required(VERSION 3.21)
+
+project(tincture)
+
+set(CMAKE_CXX_STANDARD 20)
+
+set(DAWN_ENABLE_D3D11 OFF CACHE BOOL "")
+set(DAWN_ENABLE_D3D12 OFF CACHE BOOL "")
+set(DAWN_ENABLE_METAL OFF CACHE BOOL "")
+set(DAWN_ENABLE_NULL OFF CACHE BOOL "")
+set(DAWN_ENABLE_DESKTOP_GL OFF CACHE BOOL "")
+set(DAWN_ENABLE_OPENGLES OFF CACHE BOOL "")
+set(DAWN_ENABLE_VULKAN OFF CACHE BOOL "")
+set(DAWN_ENABLE_SPIRV_VALIDATION OFF CACHE BOOL "")
+set(DAWN_BUILD_SAMPLES OFF CACHE BOOL "")
+set(DAWN_BUILD_TESTS OFF CACHE BOOL "")
+
+set(TINT_BUILD_SPV_READER ON CACHE BOOL "")
+set(TINT_BUILD_WGSL_READER OFF CACHE BOOL "")
+set(TINT_BUILD_GLSL_WRITER OFF CACHE BOOL "")
+set(TINT_BUILD_GLSL_VALIDATOR OFF CACHE BOOL "")
+set(TINT_BUILD_HLSL_WRITER OFF CACHE BOOL "")
+set(TINT_BUILD_MSL_WRITER OFF CACHE BOOL "")
+set(TINT_BUILD_SPV_WRITER OFF CACHE BOOL "")
+set(TINT_BUILD_WGSL_WRITER ON CACHE BOOL "")
+set(TINT_BUILD_IR OFF CACHE BOOL "")
+set(TINT_BUILD_IR_BINARY OFF CACHE BOOL "")
+set(TINT_BUILD_TESTS OFF CACHE BOOL "")
+set(TINT_BUILD_CMD_TOOLS OFF CACHE BOOL "")
+
+add_subdirectory(dawn EXCLUDE_FROM_ALL)
+
+# Fix dawn build
+target_include_directories(tint_lang_spirv_reader_parser PRIVATE "${spirv-tools_BINARY_DIR}")
+
+# Dawn disables most third party dependencies when building for emscripten, add them manually
+set(SPIRV_HEADERS_SKIP_EXAMPLES ON CACHE BOOL "" FORCE)
+set(SPIRV_HEADERS_SKIP_INSTALL ON CACHE BOOL "" FORCE)
+add_subdirectory(${DAWN_SPIRV_HEADERS_DIR} "${CMAKE_CURRENT_BINARY_DIR}/spirv-headers")
+
+set(SPIRV_SKIP_TESTS ON CACHE BOOL "Controls whether SPIR-V tests are run" FORCE)
+set(SPIRV_SKIP_EXECUTABLES ON CACHE BOOL "" FORCE)
+set(SKIP_SPIRV_TOOLS_INSTALL ON CACHE BOOL "" FORCE)
+set(SPIRV_WERROR OFF CACHE BOOL OFF FORCE)
+add_subdirectory(${DAWN_SPIRV_TOOLS_DIR} "${CMAKE_CURRENT_BINARY_DIR}/spirv-tools" EXCLUDE_FROM_ALL)
+
+add_library(tincture tincture.cpp)
+target_link_libraries(tincture PRIVATE tint_api)
+
+if(PROJECT_IS_TOP_LEVEL)
+  set(CMAKE_EXECUTABLE_SUFFIX ".html")
+  add_executable(example example.c)
+  target_link_libraries(example tincture "-sSTACK_SIZE=262144")
+endif()
