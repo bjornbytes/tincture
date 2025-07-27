@@ -1,3 +1,9 @@
-[submodule "dawn"]
-	path = dawn
-	url = https://dawn.googlesource.com/dawn
+[submodule "tint"]
+	path = tint
+	url = https://github.com/floooh/tint-extract
+[submodule "SPIRV-Tools"]
+	path = SPIRV-Tools
+	url = https://github.com/KhronosGroup/SPIRV-Tools
+[submodule "SPIRV-Headers"]
+	path = SPIRV-Headers
+	url = https://github.com/KhronosGroup/SPIRV-Headers
