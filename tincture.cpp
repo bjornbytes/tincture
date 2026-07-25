@@ -18,6 +18,8 @@ bool spirv_to_wgsl(const uint32_t* bytes, uint32_t wordCount, char** result) {
   tint::core::ir::Module ir = resultIR.Move();
 
   tint::wgsl::writer::Options writerOptions = {};
+  writerOptions.allowed_features = tint::wgsl::AllowedFeatures::Everything();
+
   tint::Result<tint::wgsl::writer::Output> resultWGSL = tint::wgsl::writer::WgslFromIR(ir, writerOptions);
 
   if (resultWGSL != tint::Success) {
