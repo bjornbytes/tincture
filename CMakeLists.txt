@@ -8,6 +8,15 @@ set(SPIRV_SKIP_EXECUTABLES ON CACHE BOOL "")
 
 add_subdirectory(SPIRV-Headers)
 add_subdirectory(SPIRV-Tools)
+set_target_properties(
+  SPIRV-Tools-shared
+  SPIRV-Tools-reduce
+  SPIRV-Tools-link
+  SPIRV-Tools-lint
+  SPIRV-Tools-diff
+  PROPERTIES
+  EXCLUDE_FROM_ALL ON
+)
 
 file(GLOB_RECURSE TINT_SOURCES "${PROJECT_SOURCE_DIR}/tint/src/*.cc")
 
