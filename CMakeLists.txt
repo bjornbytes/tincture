@@ -20,7 +20,11 @@ set_target_properties(
 
 file(GLOB_RECURSE TINT_SOURCES "${PROJECT_SOURCE_DIR}/tint/src/*.cc")
 
-add_library(tint SHARED)
+if(EMSCRIPTEN)
+  add_library(tint STATIC)
+else()
+  add_library(tint SHARED)
+endif()
 target_sources(tint PRIVATE ${TINT_SOURCES})
 target_include_directories(tint PUBLIC "${PROJECT_SOURCE_DIR}/tint")
 target_include_directories(tint PRIVATE "${PROJECT_SOURCE_DIR}/SPIRV-Tools")
